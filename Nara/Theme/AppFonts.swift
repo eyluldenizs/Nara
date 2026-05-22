@@ -15,7 +15,7 @@ struct AppFonts {
     
     /// Normal metinler ve açıklamalar için (Örn: Aydınlatma metni)
     static func bodyFont() -> Font {
-        return Font.system(size: 15, weight: .medium, design: .rounded)
+        return Font.system(size: 19, weight: .regular, design: .serif)
     }
     
     /// Küçük detaylar ve uyarılar için (Örn: "2 aktif ilan var")
