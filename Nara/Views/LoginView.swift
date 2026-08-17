@@ -59,11 +59,7 @@ struct LoginView: View {
     }
 
     private func handleStart() {
-        if hasRegistered {
-            authenticateWithBiometrics()
-        } else {
-            goToPhoneLogin = true
-        }
+          goToHome = true
     }
 
     private func authenticateWithBiometrics() {

@@ -167,9 +167,7 @@ struct OTPView: View {
             let hasProfile = try await KYCRepository.hasProfile()
             if hasProfile {
                 goToHome = true
-            } else {
-                goToRegister = true
-            }
+            } 
         } catch {
             errorMessage = "Kod doğrulanamadı: \(error.localizedDescription)"
         }
