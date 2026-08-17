@@ -10,7 +10,7 @@ import Combine
 import Supabase
 
 struct OTPView: View {
-    let phoneNumber: String
+    let email: String
 
     @State private var otpCode = ""
     @State private var timeRemaining = 165   // 2:45
@@ -28,8 +28,7 @@ struct OTPView: View {
         return String(format: "%02d.%02d", m, s)
     }
 
-    private var isComplete: Bool { otpCode.count == 6 }
-
+  private var isComplete: Bool { otpCode.count == 8 }
     var body: some View {
         ZStack {
             Color.appLightIceBlue
@@ -60,15 +59,15 @@ struct OTPView: View {
                         .focused($isOTPFocused)
                         .onChange(of: otpCode) { newValue in
                             let digits = newValue.filter { $0.isNumber }
-                            otpCode = String(digits.prefix(6))
+                            otpCode = String(digits.prefix(8))
                         }
 
-                    HStack(spacing: 10) {
-                        ForEach(0..<6, id: \.self) { index in
+                    HStack(spacing: 6) {
+                        ForEach(0..<8, id: \.self) { index in
                             ZStack {
                                 RoundedRectangle(cornerRadius: 12)
                                     .fill(Color.white)
-                                    .frame(width: 46, height: 56)
+                                    .frame(width: 38, height: 52)
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 12)
                                             .stroke(
@@ -160,9 +159,9 @@ struct OTPView: View {
         defer { isLoading = false }
         do {
             try await supabase.auth.verifyOTP(
-                phone: phoneNumber,
+                email: email,
                 token: otpCode,
-                type: .sms
+                type: .email
             )
             // Kullanıcının public.users kaydı var mı?
             let hasProfile = try await KYCRepository.hasProfile()
@@ -179,6 +178,5 @@ struct OTPView: View {
 
 #Preview {
     NavigationStack {
-        OTPView(phoneNumber: "+905551234567")
-    }
+        OTPView(email: "test@example.com")    }
 }

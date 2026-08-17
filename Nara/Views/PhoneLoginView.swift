@@ -9,14 +9,15 @@ import SwiftUI
 import Supabase
 
 struct PhoneLoginView: View {
-    @State private var phoneNumber = ""
+    @State private var email = ""
     @State private var goToOTP = false
     @State private var isLoading = false
     @State private var errorMessage: String?
     @FocusState private var isPhoneFocused: Bool
 
-    private var isValid: Bool { phoneNumber.count >= 10 }
-
+    private var isValid: Bool {
+        email.contains("@") && email.contains(".")
+    }
     var body: some View {
         ZStack {
             Color.appLightIceBlue
@@ -32,7 +33,7 @@ struct PhoneLoginView: View {
 
                 Spacer().frame(height: 40)
 
-                Text("Numaranı Gir")
+                Text("E-posta adresini Gir")
                     .font(AppFonts.bodyFont())
                     .foregroundColor(.appDarkBrown)
 
@@ -45,15 +46,14 @@ struct PhoneLoginView: View {
                         .foregroundColor(.appDarkestBrown)
                         .padding(.leading, 20)
 
-                    TextField("555 55 55", text: $phoneNumber)
-                        .keyboardType(.numberPad)
+                    TextField("ornek@mail.comm", text: $email)
+                        .keyboardType(.emailAddress)
+                        .textInputAutocapitalization(.never)
+                           .autocorrectionDisabled()
                         .font(.system(size: 17, weight: .regular))
                         .foregroundColor(.appDarkestBrown)
                         .focused($isPhoneFocused)
-                        .onChange(of: phoneNumber) { newValue in
-                            let digits = newValue.filter { $0.isNumber }
-                            phoneNumber = String(digits.prefix(10))
-                        }
+                       
                         .padding(.leading, 8)
                     Spacer()
                 }
@@ -102,7 +102,7 @@ struct PhoneLoginView: View {
         .toolbar(.hidden, for: .navigationBar)
         .onTapGesture { isPhoneFocused = false }
         .navigationDestination(isPresented: $goToOTP) {
-            OTPView(phoneNumber: "+90\(phoneNumber)")
+            OTPView(email: email)
         }
     }
 
@@ -111,7 +111,7 @@ struct PhoneLoginView: View {
         errorMessage = nil
         defer { isLoading = false }
         do {
-            try await supabase.auth.signInWithOTP(phone: "+90\(phoneNumber)")
+            try await supabase.auth.signInWithOTP(email: email)
             goToOTP = true
         } catch {
             errorMessage = "Kod gönderilemedi: \(error.localizedDescription)"
